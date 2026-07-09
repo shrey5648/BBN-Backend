@@ -1,23 +1,33 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const sliderSchema = new mongoose.Schema({
+const Slider = sequelize.define('Slider', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
   imageUrl: {
-    type: String,
-    required: true,
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   type: {
-    type: String,
-    enum: ['horizontal', 'vertical'],
-    required: true,
+    type: DataTypes.ENUM('horizontal', 'vertical'),
+    allowNull: false,
   },
   isActive: {
-    type: Boolean,
-    default: true,
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
   },
   order: {
-    type: Number,
-    default: 0,
-  },
-}, { timestamps: true });
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  }
+}, {
+  tableName: 'sliders',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+});
 
-module.exports = mongoose.model('Slider', sliderSchema);
+module.exports = Slider;

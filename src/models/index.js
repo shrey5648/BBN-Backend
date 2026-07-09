@@ -2,6 +2,8 @@ const Category = require('./Category');
 const Author = require('./Author');
 const Article = require('./Article');
 const User = require('./User');
+const Slider = require('./Slider');
+const Setting = require('./Setting');
 const { sequelize } = require('../config/database');
 
 // Define associations
@@ -16,5 +18,7 @@ module.exports = {
   Author,
   Article,
   User,
+  Slider,
+  Setting,
   sequelize,
 };

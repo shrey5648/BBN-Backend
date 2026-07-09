@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const Setting = require('../models/Setting');
-const { verifyToken, isAdmin } = require('../middleware/auth');
+const { Setting } = require('../models');
+const { verifyToken, requireAdmin } = require('../middleware/auth');
 
 // Get all settings (public access for homepage configuration)
 router.get('/', async (req, res) => {
   try {
-    const settings = await Setting.find();
+    const settings = await Setting.findAll();
     // Convert array to key-value object
     const settingsObj = settings.reduce((acc, curr) => {
       acc[curr.key] = curr.value;
@@ -19,18 +19,17 @@ router.get('/', async (req, res) => {
 });
 
 // Update or create a setting (admin only)
-router.put('/', verifyToken, isAdmin, async (req, res) => {
+router.put('/', verifyToken, requireAdmin, async (req, res) => {
   try {
     const { key, value } = req.body;
     
-    let setting = await Setting.findOne({ key });
+    let setting = await Setting.findOne({ where: { key } });
     
     if (setting) {
       setting.value = value;
       await setting.save();
     } else {
-      setting = new Setting({ key, value });
-      await setting.save();
+      setting = await Setting.create({ key, value });
     }
     
     res.json(setting);

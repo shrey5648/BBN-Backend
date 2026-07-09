@@ -11,14 +11,21 @@ exports.getArticles = async (req, res) => {
     
     let whereClause = { is_published: true };
     let includeClause = [
-      { model: Category, as: 'category', attributes: ['id', 'name', 'slug', 'color'] },
-      { model: Author, as: 'author', attributes: ['id', 'name', 'slug', 'avatar'] }
+      { 
+        model: Category, 
+        as: 'category', 
+        attributes: ['id', 'name', 'slug', 'color'],
+        ...(category ? { where: { slug: category } } : {})
+      },
+      { 
+        model: Author, 
+        as: 'author', 
+        attributes: ['id', 'name', 'slug', 'avatar'],
+        ...(author ? { where: { slug: author } } : {})
+      }
     ];
 
     if (format) whereClause.format = format;
-    
-    // We would ideally join for these filters but for simplicity in SQLite/MySQL we filter after or use nested includes
-    // In Sequelize, we can query nested models if needed, but let's assume we have category_id / author_id if provided.
 
     const { count, rows } = await Article.findAndCountAll({
       where: whereClause,
