@@ -84,10 +84,25 @@ app.use(errorHandler);
 
 // --- Start Server ---
 const { sequelize } = require('./src/models');
-sequelize.sync({ alter: true }).then(() => {
-  app.listen(PORT, () => {
-    console.log(`🔴 BBN India API running on http://localhost:${PORT}`)
-  });
-}).catch(err => {
-  console.error("Failed to sync db:", err);
+
+app.listen(PORT, () => {
+  console.log(`🔴 BBN India API running on http://localhost:${PORT}`);
+
+  // Perform database synchronization asynchronously in the background
+  console.log('🔄 Initiating database sync...');
+  sequelize.sync({ alter: true })
+    .then(() => {
+      console.log('✅ Database sync completed successfully (alter: true).');
+    })
+    .catch(err => {
+      console.error('❌ Failed to sync db:');
+      console.error('Error message:', err.message || err);
+      if (err.original) {
+        console.error('Original database error:', err.original);
+      }
+      if (err.sql) {
+        console.error('Executed SQL query:', err.sql);
+      }
+    });
 });
+
